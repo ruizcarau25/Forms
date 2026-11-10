@@ -1,0 +1,103 @@
+<div class="container my-4" style="max-width: 720px">
+  <h2 class="mb-4">Nueva publicación</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="mb-3">
+      <label for="title" class="form-label">Título</label>
+      <input id="title" type="text" formControlName="title" [class]="'form-control ' + state(f.title)" />
+      @if (f.title.touched && f.title.errors) {
+        <div class="invalid-feedback d-block">
+          @if (f.title.errors['required']) { El título es obligatorio. }
+          @else if (f.title.errors['minlength']) { Mínimo 3 caracteres. }
+          @else if (f.title.errors['maxlength']) { Máximo 100 caracteres. }
+        </div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Descripción</label>
+      <textarea id="description" rows="4" formControlName="description" [class]="'form-control ' + state(f.description)"></textarea>
+      <div class="form-text">{{ f.description.value.length }}/500</div>
+      @if (f.description.touched && f.description.errors) {
+        <div class="invalid-feedback d-block">
+          @if (f.description.errors['required']) { La descripción es obligatoria. }
+          @else if (f.description.errors['minlength']) { Mínimo 10 caracteres. }
+          @else if (f.description.errors['maxlength']) { Máximo 500 caracteres. }
+        </div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="category" class="form-label">Categoría</label>
+      <select id="category" formControlName="category" [class]="'form-select ' + state(f.category)">
+        <option value="" disabled>Selecciona una categoría…</option>
+        @for (c of categories; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      @if (f.category.touched && f.category.errors?.['required']) {
+        <div class="invalid-feedback d-block">Selecciona una categoría.</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="tags" class="form-label">Etiquetas</label>
+      <input id="tags" type="text" placeholder="angular, rxjs, formularios" formControlName="tags" [class]="'form-control ' + state(f.tags)" />
+      <div class="form-text">Sepáralas con comas.</div>
+      @if (f.tags.touched && f.tags.errors?.['pattern']) {
+        <div class="invalid-feedback d-block">Formato no válido. Usa palabras separadas por comas.</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email del autor</label>
+      <input id="email" type="email" formControlName="email" [class]="'form-control ' + state(f.email)" />
+      @if (f.email.touched && f.email.errors) {
+        <div class="invalid-feedback d-block">
+          @if (f.email.errors['required']) { El email es obligatorio. }
+          @else if (f.email.errors['email']) { Introduce un email válido. }
+        </div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <div class="form-check form-switch mb-2">
+        <input id="publishNow" type="checkbox" role="switch" class="form-check-input" formControlName="publishNow" />
+        <label for="publishNow" class="form-check-label">
+          {{ f.publishNow.value ? 'Publicar ahora' : 'Programar fecha' }}
+        </label>
+      </div>
+
+      <label for="publishDate" class="form-label">Fecha de publicación</label>
+      <div class="input-group">
+        <input
+          id="publishDate"
+          type="text"
+          placeholder="aaaa-mm-dd"
+          formControlName="publishDate"
+          ngbDatepicker
+          #dp="ngbDatepicker"
+          [minDate]="minDate"
+          [class]="'form-control ' + state(f.publishDate)"
+        />
+        <button class="btn btn-outline-secondary" type="button" (click)="dp.toggle()" [disabled]="f.publishDate.disabled">📅</button>
+      </div>
+      @if (f.publishDate.touched && f.publishDate.errors) {
+        <div class="invalid-feedback d-block">
+          @if (f.publishDate.errors['required']) { Selecciona una fecha. }
+          @else if (f.publishDate.errors['pastDate']) { La fecha no puede ser anterior a hoy. }
+          @else if (f.publishDate.errors['ngbDate']) { Fecha no válida. }
+        </div>
+      }
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="onReset()">Limpiar</button>
+    </div>
+  </form>
+
+  @if (submittedData) {
+    <pre class="mt-4 p-3 bg-white border rounded">{{ submittedData | json }}</pre>
+  }
+</div>
